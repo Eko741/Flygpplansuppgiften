@@ -1,6 +1,27 @@
 #pragma once
 #include "FlightHandler.h"
 
+FlightHandler::~FlightHandler()
+{
+	
+	Flight* current;
+	if (current = firstA) {
+		while (current->FlightBefore()) {
+			current = current->FlightBefore();
+			delete current->FlightAfter();
+		}
+		delete lastA;
+	}
+
+	if (current = firstG) {
+		while (current->FlightBefore()) {
+			current = current->FlightBefore();
+			delete current->FlightAfter();
+		}
+		delete lastG;
+	}
+}
+
 void FlightHandler::addFlightA()
 {
 	Flight* f = new Flight(rand() % 6 + 6, true); // All planes have 30 to 60 minutes of fuel left
@@ -27,7 +48,7 @@ void FlightHandler::addFlightG()
 	lengthG++;
 }
 
-void FlightHandler::useStrip() //Returns true if strip is used
+void FlightHandler::useStrip() 
 {
 	/*
 	Better system but not the assignment
@@ -148,8 +169,10 @@ bool FlightHandler::tick(int spawnRate)
 	Flight* current = firstA;
 	while (current) {
 		if (!current->tick()) {
-			averageWaitTimeAir /= planesLanded;
-			averageWaitTimeGround /= planesTakeOf;
+			if(planesLanded)
+				averageWaitTimeAir /= planesLanded;
+			if(planesTakeOf)
+				averageWaitTimeGround /= planesTakeOf;
 			return false;
 		}
 		current = current->FlightBefore();
