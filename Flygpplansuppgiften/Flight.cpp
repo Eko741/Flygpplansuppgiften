@@ -13,7 +13,7 @@ bool Flight::tick() {
 
 const Flight& Flight::operator<<(const Flight& a)
 { 
-	fuel = a.fuel;;
+	fuel = a.fuel;
 	waitTimeAir = a.waitTimeAir;
 	waitTimeGround = a.waitTimeGround;
 	airborne = a.airborne;

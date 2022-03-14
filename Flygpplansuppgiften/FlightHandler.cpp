@@ -27,7 +27,7 @@ void FlightHandler::addFlightG()
 	lengthG++;
 }
 
-void FlightHandler::useStrip()
+void FlightHandler::useStrip() //Returns true if strip is used
 {
 	/*
 	Better system but not the assignment
@@ -68,8 +68,14 @@ void FlightHandler::useStrip()
 		thisPlane->FlightAfter(nullptr);
 		lastA->FlightBefore(nullptr);
 		//Record plane stats
+		if (thisPlane->WaitTimeAir() > longestWaitTimeAir)
+			longestWaitTimeAir = thisPlane->WaitTimeAir();
+		averageWaitTimeAir += thisPlane->WaitTimeAir();
 		delete thisPlane;
 		lengthA--;
+		planesLanded++;
+		stripCooldown = 3;
+		return;
 	}
 
 	// A plane is taking off
@@ -79,9 +85,17 @@ void FlightHandler::useStrip()
 		thisPlane->FlightAfter(nullptr);
 		lastG->FlightBefore(nullptr);
 		//Record plane stats
+		if (thisPlane->WaitTimeGround() > longestWaitTimeGround)
+			longestWaitTimeGround = thisPlane->WaitTimeGround();
+		averageWaitTimeGround += thisPlane->WaitTimeGround();
 		delete thisPlane;
 		lengthG--;
+		planesTakeOf++;
+		stripCooldown = 3;
+		return;
 	}
+	unusedTime += 5;
+	stripCooldown = 0;
 	return;
 }
 
@@ -91,7 +105,7 @@ void FlightHandler::swapFlightsA(unsigned int a, unsigned int b)
 		return;
 
 	Flight* flightA = nullptr;
-	Flight* flightB = nullptr;;
+	Flight* flightB = nullptr;
 	Flight* currentF = firstA;
 	
 	int current = 0;
@@ -127,10 +141,17 @@ Flight& FlightHandler::getFlightG(const int point) const
 
 bool FlightHandler::tick(int spawnRate)
 {
+	if (!stripCooldown--)  
+		useStrip();
+	
+
 	Flight* current = firstA;
 	while (current) {
-		if (!current->tick())
+		if (!current->tick()) {
+			averageWaitTimeAir /= planesLanded;
+			averageWaitTimeGround /= planesTakeOf;
 			return false;
+		}
 		current = current->FlightBefore();
 	}
 	current = firstG;
