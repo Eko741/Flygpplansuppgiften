@@ -1,17 +1,18 @@
-#include "Flight.h"
-bool Flight::tick() {
+#include "FlightD.h"
+
+bool FlightD::tick() {
 	if (airborne) {
 		waitTimeAir += 5;
 		return --fuel;
 	}
-	else{
+	else {
 		waitTimeGround += 5;
 		return true;
 	}
 }
 
-const Flight& Flight::operator<<(const Flight& a)
-{ 
+const FlightD& FlightD::operator<<(const FlightD& a)
+{
 	fuel = a.fuel;
 	waitTimeAir = a.waitTimeAir;
 	waitTimeGround = a.waitTimeGround;

@@ -1,9 +1,8 @@
 #pragma once
-#include <fstream>
 class Flight
 {
-public:
-	Flight(unsigned int F, bool AB) : flightAfter(nullptr), flightBefore(nullptr), fuel(F), airborne(AB) {}
+public:// Fixa dynamisk bindning
+	Flight(unsigned int F, bool AB) : fuel(F), airborne(AB) {}
 
 	Flight* FlightAfter() { return flightAfter; }
 	Flight* FlightBefore() { return flightBefore;}
@@ -18,8 +17,8 @@ public:
 
 private:
 
-	Flight* flightAfter; //The flight that is in front of this one in the queue
-	Flight* flightBefore; //The flight that is behind this one in the queue
+	Flight* flightAfter = nullptr; //The flight that is in front of this one in the queue
+	Flight* flightBefore = nullptr; //The flight that is behind this one in the queue
 	unsigned int fuel;
 	unsigned int waitTimeAir = 0; // In mins
 	unsigned int waitTimeGround = 0; // In mins

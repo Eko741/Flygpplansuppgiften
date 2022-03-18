@@ -4,7 +4,9 @@
 #include <fstream>
 class FlightHandler {
 public:
-	FlightHandler(int& LWTA, int& LWTG, double& AWTA, double & AWTG, double & UT) : lengthA(0), firstA(nullptr), lastA(nullptr), lengthG(0), firstG(nullptr), lastG(nullptr), longestWaitTimeAir(LWTA), longestWaitTimeGround(LWTG), averageWaitTimeAir(AWTA), averageWaitTimeGround(AWTG), unusedTime(UT){}
+	FlightHandler(int& LWTA, int& LWTG, double& AWTA, double & AWTG, double & UT) : lengthA(0), firstA(nullptr), lastA(nullptr),
+		lengthG(0), firstG(nullptr), lastG(nullptr), longestWaitTimeAir(LWTA), longestWaitTimeGround(LWTG), averageWaitTimeAir(AWTA),
+		averageWaitTimeGround(AWTG), unusedTime(UT){}
 	~FlightHandler();
 	unsigned int Length() { return lengthG + lengthA; }
 	void addFlightA();
