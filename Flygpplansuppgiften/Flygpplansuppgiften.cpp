@@ -53,14 +53,20 @@ int main()
         "," << FLD[i].longestWaitTimeGround << "," << FLD[i].averageStripUse << endl;
 
     ofstream binData(((string)"data/").append(dataFolder).append("/binData.FL"), ios::binary);
+    ofstream GUI("../../GUITesting/GUITesting/binData.FL", ios::binary);
     if (!binData.is_open()) {
         std::cout << "Bad file name";
         exit;
     }
-
+    if (!GUI.is_open()) {
+        std::cout << "Bad file name";
+        exit;
+    }
+    GUI.write((char*)&SPAWNRATE, 4);
     binData.write((char*)&SPAWNRATE, 4);
     for (int i = 0; i < SPAWNRATE; i++) {
         binData.write((char*)&FLD[i].failRate, 8);
+        GUI.write((char*)&FLD[i].averageStripUse, 8);
     }
    
 }
