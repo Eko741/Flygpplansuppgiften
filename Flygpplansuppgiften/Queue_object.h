@@ -12,6 +12,8 @@ public:
 	QueueObject* Prev() { return prev; }
 	Data* getData() { return data; }
 
+	static void swapFlights(QueueObject* a, QueueObject* b);
+
 private:
 	QueueObject* next, * prev;
 	Data* data;

@@ -1,10 +1,11 @@
 #include <iostream>
+#include <fstream>
 #define DYNAMIC 1
 #if DYNAMIC
 #include "FlightHandlerD.h"
+#else
 #include "FlightHandler.h"
 #endif
-#include <fstream>
 
 struct FlightLogData{
     int longestWaitTimeAir = 0, longestWaitTimeGround = 0;
@@ -26,9 +27,9 @@ int main()
         double averageWaitTimeA = 0, averageWaitTimeG = 0, unusedTime = 0;
         for (int k = 0; k < TRIES; k++) {
 #if DYNAMIC
-            FlightHandler a(FLD[j].longestWaitTimeAir, FLD[j].longestWaitTimeGround, averageWaitTimeA, averageWaitTimeG, unusedTime);
-#else
             FlightHandlerD a(FLD[j].longestWaitTimeAir, FLD[j].longestWaitTimeGround, averageWaitTimeA, averageWaitTimeG, unusedTime);
+#else
+            FlightHandler a(FLD[j].longestWaitTimeAir, FLD[j].longestWaitTimeGround, averageWaitTimeA, averageWaitTimeG, unusedTime);
 #endif
             for (int i = 0; i < CYCLES; i++) 
                 if (!a.tick(j)) {

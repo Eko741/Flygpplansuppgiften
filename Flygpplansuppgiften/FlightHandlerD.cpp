@@ -49,47 +49,27 @@ void FlightHandlerD::addFlightG()
 
 void FlightHandlerD::useStrip()
 {
-	/*
-	Better system but not the assignment
-	if (lengthA) { // A flight is landing
-		// "this flight" means the one that is landing
-		Flight* thisPlane = firstA;
-		if(lastG)
-			lastG->FlightBefore(thisPlane);// Last flight in the ground queue knows that this plane has landed
-		thisPlane->FlightAfter(lastG); // This flight knows which plane is ahead in the ground queue
-		lastG = thisPlane; // Last flight in ground queue is now this flight
-		if (!firstG)
-			firstG = thisPlane;
-		firstA = thisPlane->FlightBefore();// First flight in air  queue is now the flight before this one
-		if (firstA) {
-			firstA->FlightAfter(nullptr); // First flight in air  queue now has no flight after it
-		}
-		thisPlane->FlightBefore(nullptr); // This flight doesn't have a flight before
-		lengthA--;
-		lengthG++;
-		return;
-	}
-	*/
-
 	if (lengthA) {
+		// If a flight will crash before the next flight is done landing, make that flight be the one landing
 		QueueObject* currentF = firstA;
-		int current = 0;
 		while (currentF) {
 			if (dynamic_cast<FlightD*>(currentF->getData())->Fuel() <= 3) {
-				swapFlightsA(0, current);
+				QueueObject::swapFlights(firstA, currentF);
 				break;
 			}
 			currentF = currentF->Prev();
-			current++;
 		}
+
 
 		QueueObject* thisPlane = firstA;
 		FlightD* thisFlight = dynamic_cast<FlightD*>(firstA->getData());
+		if (!thisFlight)
+			return;
 		firstA = thisPlane->Prev();
 		thisPlane->Next(nullptr);
 		lastA->Prev(nullptr);
 		//Record plane stats
-		if (dynamic_cast<FlightD*>(currentF->getData())->WaitTimeAir() > longestWaitTimeAir)
+		if (thisFlight->WaitTimeAir() > longestWaitTimeAir)
 			longestWaitTimeAir = thisFlight->WaitTimeAir();
 		averageWaitTimeAir += thisFlight->WaitTimeAir();
 		delete thisPlane;
@@ -103,6 +83,8 @@ void FlightHandlerD::useStrip()
 	if (lengthG) {
 		QueueObject* thisPlane = firstG;
 		FlightD* thisFlight = dynamic_cast<FlightD*>(firstG->getData());
+		if (!thisFlight)
+			return;
 		firstG = thisPlane->Prev();
 		thisPlane->Next(nullptr);
 		lastG->Prev(nullptr);
@@ -119,30 +101,6 @@ void FlightHandlerD::useStrip()
 	unusedTime += 5;
 	stripCooldown = 0;
 	return;
-}
-
-void FlightHandlerD::swapFlightsA(unsigned int a, unsigned int b)
-{
-	if (a >= lengthA || b >= lengthA || a == b)
-		return;
-
-	QueueObject* flightA = nullptr;
-	QueueObject* flightB = nullptr;
-	QueueObject* currentF = firstA;
-
-	int current = 0;
-	while (currentF) {
-		if (current == a)
-			flightA = currentF;
-		else if (current == b)
-			flightB = currentF;
-		currentF = currentF->Prev();
-		current++;
-	}
-
-	Data* tmp = flightA->getData();
-	flightA->setData(flightB->getData());
-	flightB->setData(tmp);
 }
 
 QueueObject& FlightHandlerD::getFlightA(const int point) const

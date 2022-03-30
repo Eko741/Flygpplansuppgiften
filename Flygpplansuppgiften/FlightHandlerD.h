@@ -14,7 +14,6 @@ public:
 	void addFlightA();
 	void addFlightG();
 	void useStrip();
-	void swapFlightsA(unsigned int a, unsigned int b);
 	QueueObject& getFlightA(const int point) const;
 	QueueObject& getFlightG(const int point) const;
 	bool tick(int spawnRate);
