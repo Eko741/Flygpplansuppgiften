@@ -15,6 +15,6 @@ public:
 	static void swapFlights(QueueObject* a, QueueObject* b);
 
 private:
-	QueueObject* next, * prev;
+	QueueObject* next = nullptr, * prev = nullptr;
 	Data* data;
 };

@@ -1,22 +1,23 @@
 #pragma once
 #include "FlightHandlerD.h"
+#include "Data.h"
+#include "Constants.h"
+#include <iostream>
+#include "FlightD.h"
+
 
 FlightHandlerD::~FlightHandlerD()
 {
 	QueueObject* current;
 	if (current = firstA) {
-		while (current->Prev()) {
-			current = current->Prev();
+		while (current = current->Prev()) 
 			delete current->Next();
-		}
 		delete lastA;
 	}
 
 	if (current = firstG) {
-		while (current->Prev()) {
-			current = current->Prev();
+		while (current = current->Prev())
 			delete current->Next();
-		}
 		delete lastG;
 	}
 }
@@ -36,7 +37,7 @@ void FlightHandlerD::addFlightA()
 
 void FlightHandlerD::addFlightG()
 {
-	QueueObject* f = new QueueObject(new FlightD(rand() % 6 + 6, true)); // All planes have 30 to 60 minutes of fuel left
+	QueueObject* f = new QueueObject(new FlightD(std::rand() % 6 + 6, true)); // All planes have 30 to 60 minutes of fuel left
 	if (!lengthG)
 		firstG = f;
 	else {
@@ -59,46 +60,41 @@ void FlightHandlerD::useStrip()
 			}
 			currentF = currentF->Prev();
 		}
-
+		if (leastFuel < planesWithLeastFuel) // If too avoid a crash a change of the order needs to be made
+			swapFlightsA(firstA, planeWithLeastFuel);
 
 		QueueObject* thisPlane = firstA;
-		FlightD* thisFlight = dynamic_cast<FlightD*>(firstA->getData());
-		if (!thisFlight)
-			return;
+		FlightD* thisFlight = (FlightD*)(firstA->getData());//For easier reading of code
 		firstA = thisPlane->Prev();
-		thisPlane->Next(nullptr);
-		lastA->Prev(nullptr);
-		//Record plane stats
+		if (firstA)
+			firstA->Next(nullptr);
 		if (thisFlight->WaitTimeAir() > longestWaitTimeAir)
 			longestWaitTimeAir = thisFlight->WaitTimeAir();
 		averageWaitTimeAir += thisFlight->WaitTimeAir();
 		delete thisPlane;
 		lengthA--;
 		planesLanded++;
-		stripCooldown = 3;
+		stripCooldown = TIMETOUSESTRIP - 1;
 		return;
 	}
 
 	// A plane is taking off
 	if (lengthG) {
 		QueueObject* thisPlane = firstG;
-		FlightD* thisFlight = dynamic_cast<FlightD*>(firstG->getData());
-		if (!thisFlight)
-			return;
+		FlightD* thisFlight = (FlightD*)(firstG->getData()); //For easier reading of code
 		firstG = thisPlane->Prev();
-		thisPlane->Next(nullptr);
-		lastG->Prev(nullptr);
-		//Record plane stats
+		if (firstG)
+			firstG->Next(nullptr);
 		if (thisFlight->WaitTimeGround() > longestWaitTimeGround)
 			longestWaitTimeGround = thisFlight->WaitTimeGround();
 		averageWaitTimeGround += thisFlight->WaitTimeGround();
 		delete thisPlane;
 		lengthG--;
 		planesTakeOf++;
-		stripCooldown = 3;
+		stripCooldown = TIMETOUSESTRIP - 1;
 		return;
 	}
-	unusedTime += 5;
+	unusedTime += TIMEPERIOD;
 	stripCooldown = 0;
 	return;
 }

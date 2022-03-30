@@ -139,20 +139,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Data.cpp" />
     <ClCompile Include="Flight.cpp" />
     <ClCompile Include="FlightD.cpp" />
-    <ClCompile Include="FlightHandler.cpp" />
-    <ClCompile Include="FlightHandlerD.h" />
-    <ClCompile Include="Flygpplansuppgiften.cpp" />
-    <ClCompile Include="Queue_object.cpp" />
+    <ClCompile Include="FlightHandler.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Disabled</Optimization>
+    </ClCompile>
+    <ClInclude Include="FlightHandlerD.h" />
+    <ClCompile Include="Flygpplansuppgiften.cpp">
+      <FavorSizeOrSpeed Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Speed</FavorSizeOrSpeed>
+      <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</WholeProgramOptimization>
+      <FavorSizeOrSpeed Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Speed</FavorSizeOrSpeed>
+      <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</WholeProgramOptimization>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="Data.h" />
     <ClInclude Include="Flight.h" />
     <ClInclude Include="FlightD.h" />
     <ClInclude Include="FlightHandler.h" />
-    <ClInclude Include="FlightHandlerD.cpp" />
+    <ClCompile Include="FlightHandlerD.cpp" />
     <ClInclude Include="Queue_object.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

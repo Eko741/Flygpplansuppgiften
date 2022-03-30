@@ -1,26 +1,22 @@
 #pragma once
 #include "Queue_object.h"
-#include <iostream>
-#include <fstream>
-#include "FlightD.h"
-
 class FlightHandlerD {
+	//Alomst exactly the same as Flight Handler but with some tweaks to make it work with a general linked list 
 public:
+	~FlightHandlerD();
 	FlightHandlerD(int& LWTA, int& LWTG, double& AWTA, double& AWTG, double& UT) : lengthA(0), firstA(nullptr), lastA(nullptr),
 		lengthG(0), firstG(nullptr), lastG(nullptr), longestWaitTimeAir(LWTA), longestWaitTimeGround(LWTG), averageWaitTimeAir(AWTA),
-		averageWaitTimeGround(AWTG), unusedTime(UT) {}
-	~FlightHandlerD();
+		averageWaitTimeGround(AWTG), unusedTime(UT), planesLanded(0), planesTakeOf(0), stripCooldown(0) {}
+	
 	unsigned int Length() { return lengthG + lengthA; }
 	void addFlightA();
 	void addFlightG();
 	void useStrip();
 	QueueObject& getFlightA(const int point) const;
 	QueueObject& getFlightG(const int point) const;
-	bool tick(int spawnRate);
+	bool tick(int spawnRate); 
 
 private:
-	int stripCooldown = 0;
-
 	unsigned int lengthA;
 	QueueObject* firstA;
 	QueueObject* lastA;
@@ -29,12 +25,13 @@ private:
 	QueueObject* firstG;
 	QueueObject* lastG;
 
+	int planesLanded;
+	int planesTakeOf;
+	int stripCooldown;
+
 	int& longestWaitTimeAir;
 	int& longestWaitTimeGround;
 	double& averageWaitTimeAir;
 	double& averageWaitTimeGround;
 	double& unusedTime;
-
-	int planesLanded = 0;
-	int planesTakeOf = 0;
 };
