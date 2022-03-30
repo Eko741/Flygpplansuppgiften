@@ -13,6 +13,6 @@ public:
 	Data* getData() { return data; }
 
 private:
-	QueueObject* next, * prev;
+	QueueObject* next = nullptr, * prev = nullptr;
 	Data* data;
 };

@@ -1,21 +1,14 @@
+#pragma once
 #include "FlightD.h"
+#include "Constants.h"
 
 bool FlightD::tick() {
 	if (airborne) {
-		waitTimeAir += 5;
+		waitTimeAir += TIMETOUSESTRIP;
 		return --fuel;
 	}
 	else {
-		waitTimeGround += 5;
+		waitTimeGround += TIMETOUSESTRIP;
 		return true;
 	}
-}
-
-const FlightD& FlightD::operator<<(const FlightD& a)
-{
-	fuel = a.fuel;
-	waitTimeAir = a.waitTimeAir;
-	waitTimeGround = a.waitTimeGround;
-	airborne = a.airborne;
-	return *this;
 }
