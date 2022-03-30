@@ -145,6 +145,7 @@
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Disabled</Optimization>
     </ClCompile>
+    <ClCompile Include="Queue_object.cpp" />
     <ClInclude Include="FlightHandlerD.h" />
     <ClCompile Include="Flygpplansuppgiften.cpp">
       <FavorSizeOrSpeed Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Speed</FavorSizeOrSpeed>

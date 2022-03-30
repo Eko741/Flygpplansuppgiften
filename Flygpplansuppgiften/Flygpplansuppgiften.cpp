@@ -11,15 +11,14 @@ struct FlightLogData{
     int longestWaitTimeAir = 0, longestWaitTimeGround = 0;
     double averageWaitTimeAir = 0, averageWaitTimeGround = 0, averageTimeWasted = 0, failRate = 0;
 };
+
 using namespace std;
 int main()
 {
     const string dataFolder = "test"; // The folder that all the data is put into. 
-
     FlightLogData FLD[SPAWNRATE]; 
 
-    //Every spawnrate is tested from 0 to SPAWNRATE in promille.
-    //It's tested TRIES times and every try is put through CYCLES cycles
+    //Every SPAWNRATE is tested TRIES amount of time using CYCLES amount of ticks
     for (int j = 0; j < SPAWNRATE; j++) {
         double averageWaitTimeA = 0, averageWaitTimeG = 0, unusedTime = 0;
         for (int k = 0; k < TRIES; k++) {
@@ -49,12 +48,6 @@ int main()
         // The failrate is printed to show that the program is actually runnning
         std::cout << FLD[j].failRate << std::endl;
     }
-
-
-
-
-
-
 
     // The CSV file
     ofstream data(((string)"data/").append(dataFolder).append("/data.FL")); // Open the file

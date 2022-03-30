@@ -60,8 +60,6 @@ void FlightHandlerD::useStrip()
 			}
 			currentF = currentF->Prev();
 		}
-		if (leastFuel < planesWithLeastFuel) // If too avoid a crash a change of the order needs to be made
-			swapFlightsA(firstA, planeWithLeastFuel);
 
 		QueueObject* thisPlane = firstA;
 		FlightD* thisFlight = (FlightD*)(firstA->getData());//For easier reading of code
