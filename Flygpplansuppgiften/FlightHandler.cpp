@@ -27,6 +27,8 @@ FlightHandler::~FlightHandler()
 			delete current->FlightAfter();
 		delete lastG;
 	}
+
+	delete stripCooldown;
 }
 
 void FlightHandler::addFlightA() // Adds flight to the back of air queue
@@ -58,66 +60,80 @@ void FlightHandler::addFlightG() // Adds flight to the back of ground queue
 
 void FlightHandler::useStrip() 
 {
-	if (lengthA) { // Landings will always be prioritized over take ofs
-		//This system is made with one landing strip in mind. Quite crude. It would over prioritze with more landing strips
-		int leastFuel = 100, planesWithLeastFuel = 0; // Leastfuel means the plane with the least actual fuel which is
-		//How many 15 minutes it can stay in the air before crashing
-		Flight* planeWithLeastFuel = nullptr;
-		Flight* currentF = firstA;
-		while (currentF) {
-			int actualFuel = (currentF->Fuel() - 1) / 3; // Cualculate the actual fuel
-			if (actualFuel < leastFuel) { //If this is the lowest yet
-				leastFuel = actualFuel;	// Update the least fuel
-				planesWithLeastFuel = 1;
-				planeWithLeastFuel = currentF;
-			}
-			else if (actualFuel == leastFuel) { //If another plane also has this amount of fuel increment the amount
-				if (currentF->Fuel() < planeWithLeastFuel->Fuel()) // Better for more than one landing strip
-					planeWithLeastFuel = currentF;
-				planesWithLeastFuel++;
-			}
-			currentF = currentF->FlightBefore();
+	for (int i = 0; i < numberOfStrips; i++) {
+		if (stripCooldown[i]) {
+			stripCooldown[i]--;
+			continue;
 		}
-		if (leastFuel < planesWithLeastFuel) // If too avoid a crash a change of the order needs to be made
-			swapFlightsA(firstA, planeWithLeastFuel); // the problematic plane is pushed to the front 
 
-		Flight* thisPlane = firstA; // This plane is the first in the air queue
-		firstA = thisPlane->FlightBefore(); // First in queue is now the plane behind this one
-		//Statistics
-		if (firstA)
-			firstA->FlightAfter(nullptr); //The first plane in queue needs to be pointing at a nullpointer
-		if (thisPlane->WaitTimeAir() > longestWaitTimeAir)
-			longestWaitTimeAir = thisPlane->WaitTimeAir();
-		averageWaitTimeAir += thisPlane->WaitTimeAir();
-		
-		delete thisPlane;
-		lengthA--;
-		planesLanded++;
-		stripCooldown = TIMETOUSESTRIP - 1; // The landingstrip can't be used for 3 time units
-		return;
+		if (lengthA) { // Landings will always be prioritized over take offs
+			switch (algorithm){
+			case 2: {
+				// This system is made with one landing strip in mind. Quite crude. It would over prioritze with more landing strips
+				int leastFuel = 100, planesWithLeastFuel = 0; // Leastfuel means the plane with the least actual fuel which is
+				// How many 15 minutes it can stay in the air before crashing
+				Flight* planeWithLeastFuel = nullptr;
+				Flight* currentF = firstA;
+				while (currentF) {
+					int actualFuel = (currentF->Fuel() - 1) / 3; // Cualculate the actual fuel
+					if (actualFuel < leastFuel) { //If this is the lowest yet
+						leastFuel = actualFuel;	// Update the least fuel
+						planesWithLeastFuel = 1;
+						planeWithLeastFuel = currentF;
+					}
+					else if (actualFuel == leastFuel) { //If another plane also has this amount of fuel increment the amount
+						if (currentF->Fuel() < planeWithLeastFuel->Fuel()) // Better for more than one landing strip
+							planeWithLeastFuel = currentF;
+						planesWithLeastFuel++;
+					}
+					currentF = currentF->FlightBefore();
+				}
+				if (leastFuel < planesWithLeastFuel) // If too avoid a crash a change of the order needs to be made
+					swapFlightsA(firstA, planeWithLeastFuel); // the problematic plane is pushed to the front 
+			}
+				break;
+			case 1: {
+				Flight* lowest = firstA;
+				Flight* currentF = firstA;
+				int min = currentF->Fuel();
+				while (currentF = currentF->FlightBefore())
+					if (currentF->Fuel() < min) {
+						min = currentF->Fuel();
+						lowest = currentF;
+					}
+				swapFlightsA(firstA, lowest);
+			}
+				break;
+			default:
+				break;
+			}
+
+			Flight* thisPlane = firstA; // This plane is the first in the air queue
+			firstA = thisPlane->FlightBefore(); // First in queue is now the plane behind this one
+
+			if (firstA)
+				firstA->FlightAfter(nullptr); //The first plane in queue needs to be pointing at a nullpointer
+
+			delete thisPlane;
+			lengthA--;
+			stripCooldown[i] = useTime - 1; // The landingstrip can't be used for 3 time units
+		} 
+
+		// A plane is taking off
+		else if (lengthG) {
+			Flight* thisPlane = firstG;
+			firstG = thisPlane->FlightBefore();
+			if (firstG)
+				firstG->FlightAfter(nullptr);
+			//Statistics
+
+			delete thisPlane;
+			lengthG--;
+			stripCooldown[i] = useTime - 1;
+			return;
+		}else
+			stripCooldown[i] = 0;
 	}
-
-	// A plane is taking off
-	if (lengthG) {
-		Flight* thisPlane = firstG;
-		firstG = thisPlane->FlightBefore();
-		if (firstG)
-			firstG->FlightAfter(nullptr);
-		//Statistics
-		if (thisPlane->WaitTimeGround() > longestWaitTimeGround)
-			longestWaitTimeGround = thisPlane->WaitTimeGround();
-		averageWaitTimeGround += thisPlane->WaitTimeGround();
-
-		delete thisPlane;
-		lengthG--;
-		planesTakeOf++;
-		stripCooldown = TIMETOUSESTRIP - 1;
-		return;
-	}
-	//If there are no planes set stripcooldown to 1 and add 5 min to the unused time
-	unusedTime += TIMEPERIOD;
-	stripCooldown = 0;
-	return;
 } 
 
 void FlightHandler::swapFlightsA( Flight* const  a, Flight* const b) // Swaps two flights
@@ -145,20 +161,15 @@ Flight& FlightHandler::getFlightG(const int point) const // For bug testing purp
 
 bool FlightHandler::tick(int spawnRate)
 {
-	if (!stripCooldown--) // If the strip is not in use 
-		useStrip();
-	
-	if(firstA) // If there is a plane in the air queue
-		if (!firstA->tick()) { // Tick returns false if a plane crashed
-			// Calculate the averages of this cycle then return false to stop this try cycle
-			if(planesLanded)
-				averageWaitTimeAir /= planesLanded; 
-			if(planesTakeOf)
-				averageWaitTimeGround /= planesTakeOf;
+
+	useStrip();
+
+	Flight* currentF = firstA;
+	while (currentF) {
+		if (!currentF->tick())
 			return false;
-		}
-	if (firstG) // If there is plane in the ground queue
-		firstG->tick();
+		currentF = currentF->FlightBefore();
+	}
 
 	// Randomly spawn planes both in air and ground queue
 	if (numberGenerator() % 1000 > 1000 - spawnRate) 
@@ -168,56 +179,10 @@ bool FlightHandler::tick(int spawnRate)
 	return true;
 }
 
-std::ostream* FlightHandler::operator>>(std::ostream* cout) const // For bug testing purposes 
-{
-
-	Flight* current = firstA;
-	*cout << "Airborne: " << std::endl << "Wait time air:  Wait time ground:  Fuel:" << std::endl;
-
-	while (current) {
-		*cout << current->WaitTimeAir() << "  " << current->WaitTimeGround() << "  " << current->Fuel() << std::endl;
-		current = current->FlightBefore();
-	}
-
-	current = firstG;
-	*cout << "On ground: " << std::endl << "Wait time air, Wait time ground, Fuel" << std::endl;
-
-	while (current) {
-		*cout << current->WaitTimeAir() << "  " << current->WaitTimeGround() << "  " << current->Fuel() << std::endl;
-		current = current->FlightBefore();
-
-		*cout << std::endl;
-		return cout;
-	}
+FlightHandler::FlightHandler(int NOS, int UT, int algo) : lengthA(0), firstA(nullptr), lastA(nullptr), lengthG(0), firstG(nullptr),
+lastG(nullptr), stripCooldown(new int[NOS]), numberOfStrips(NOS), useTime(UT), algorithm(algo) {
+	for (int i = 0; i < NOS; i++)
+		stripCooldown[i] = 0;
 }
 
-void FlightHandler::reset() // Like creating a new object but without loosing the refrences
-// Could be faster probably not though
-{
-	Flight* current;
-	if (current = firstA) {
-		while (current->FlightBefore()) {
-			current = current->FlightBefore();
-			delete current->FlightAfter();
-		}
-		delete lastA;
-	}
 
-	if (current = firstG) {
-		while (current->FlightBefore()) {
-			current = current->FlightBefore();
-			delete current->FlightAfter();
-		}
-		delete lastG;
-	}
-
-	stripCooldown = 0;
-	lengthA = 0;
-	firstA = nullptr;
-	lastA = nullptr;
-	lengthG = 0;
-	firstG = nullptr;
-	lastG = nullptr;
-	planesLanded = 0;
-	planesTakeOf = 0;
-}

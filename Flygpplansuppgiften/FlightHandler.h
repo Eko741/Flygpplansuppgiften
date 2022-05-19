@@ -6,10 +6,8 @@
 //"Optimized" version of the simulation
 class FlightHandler {
 public:
-	FlightHandler(int& LWTA, int& LWTG, double& AWTA, double & AWTG, double & UT) : longestWaitTimeAir(LWTA),
-		longestWaitTimeGround(LWTG), averageWaitTimeAir(AWTA), averageWaitTimeGround(AWTG), unusedTime(UT),
-		lengthA(0), firstA(nullptr), lastA(nullptr), lengthG(0), firstG(nullptr), lastG(nullptr), planesLanded(0),
-		planesTakeOf(0), stripCooldown(0){}
+	// Implement many landingstrips, different airplane priorites algorithms, landingstrip use time
+	FlightHandler(int NOS, int UT, int algo);
 	~FlightHandler();
 
 	unsigned int Length() { return lengthG + lengthA; }
@@ -20,10 +18,12 @@ public:
 	Flight& getFlightA(const int point) const;
 	Flight& getFlightG(const int point) const;
 	bool tick(int spawnRate);
-	std::ostream* operator>>(std::ostream* cout)const; 
-	void reset();
 
 private:
+	int numberOfStrips;
+	int useTime;
+	int algorithm;
+
 	unsigned int lengthA;
 	Flight* firstA;
 	Flight* lastA;
@@ -32,15 +32,7 @@ private:
 	Flight* firstG;
 	Flight* lastG;
 
-	int stripCooldown;
-	int planesLanded;
-	int planesTakeOf;
-
-	int& longestWaitTimeAir;
-	int& longestWaitTimeGround;
-	double& averageWaitTimeAir;
-	double& averageWaitTimeGround;
-	double& unusedTime;
+	int* stripCooldown;
 
 	static uint64_t x;
 	static uint64_t numberGenerator();

@@ -24,15 +24,6 @@
     <ClCompile Include="FlightHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FlightD.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FlightHandlerD.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Queue_object.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Flight.h">
@@ -41,19 +32,7 @@
     <ClInclude Include="FlightHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Data.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Queue_object.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FlightD.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Constants.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FlightHandlerD.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

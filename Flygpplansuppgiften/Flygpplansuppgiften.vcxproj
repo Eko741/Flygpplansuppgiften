@@ -140,13 +140,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Flight.cpp" />
-    <ClCompile Include="FlightD.cpp" />
     <ClCompile Include="FlightHandler.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Disabled</Optimization>
     </ClCompile>
-    <ClCompile Include="Queue_object.cpp" />
-    <ClInclude Include="FlightHandlerD.h" />
     <ClCompile Include="Flygpplansuppgiften.cpp">
       <FavorSizeOrSpeed Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</WholeProgramOptimization>
@@ -156,12 +153,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Constants.h" />
-    <ClInclude Include="Data.h" />
     <ClInclude Include="Flight.h" />
-    <ClInclude Include="FlightD.h" />
     <ClInclude Include="FlightHandler.h" />
-    <ClCompile Include="FlightHandlerD.cpp" />
-    <ClInclude Include="Queue_object.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
